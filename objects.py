@@ -1,4 +1,7 @@
 
+import csv
+from os import read
+
 class run_chart:
 
     def __init__(self) -> None:
@@ -34,15 +37,59 @@ class run_chart:
         except:
             raise TypeError("Data contains non-numeric types.")
 
-        #Append new data and labels to existing data.    
+        # Append new data and labels to existing data.    
         self.data.extend(new_data) 
         self.labels.extend(self._check_labels(new_labels, len(new_data)))
         self._update_attributes()
         return self
 
-    def from_csv(self, data_col, label_col, grouping_col):
+    def from_csv(self, filepath, data_col, label_col = None, grouping_col = None, header = True, delimiter = ","):
         # parse data from csv into a run_chart object
-        pass
+        # other columns will be ignored
+        # columns can be integers (if no header) or strings matching the header.
+        # only 1 header row is parsed
+
+
+        columns = []
+        with open(filepath,"r", encoding='UTF-8-sig') as file:
+            dialect = csv.Sniffer().sniff(file.readline(), delimiters=delimiter)
+            file.seek(0) # go to beginning
+            reader = csv.reader(file, delimiter=delimiter, dialect=dialect)
+
+            # data is string + header -> find headers and get column id
+            # data is int    + header -> use column id
+            # data is int    + no header -> use 
+
+            # handele nulls, strings, ints, all need to be the same
+
+            if isinstance(data_col, str) and not header:
+                raise ValueError("Named columns can only be used if csv file includes header.")
+            
+            for row in reader:
+                if columns:
+                    for i, value in enumerate(row):
+                        columns[i].append(value)
+                else:
+                    # First row is becomes header unless header is false in which case ints are applied.
+                    if header:
+                        columns = [[value] for value in row]
+                    else:
+                        columns = [[value] for value in list(range(len(file.readline().strip().split(','))))]
+                        file.seek(0)
+
+            col_dict = {c[0] : c[1:] for c in columns}
+
+
+
+            if isinstance(data_col, str) and header:
+                # organize the headers and data
+                pass
+            if ():
+                pass
+            
+            print(col_dict)
+
+        return self
 
     def from_dataframe(self, data_col, label_col, grouping_col):
         # parse data from dataframe object into a run_chart object
@@ -50,7 +97,6 @@ class run_chart:
 
     def to_csv():
         # converts csv to dataframe and parses object. 
-        # not suggested unless you know what the columns contain
         pass
 
     def to_dataframe():
@@ -89,23 +135,39 @@ class control_chart(run_chart):
         
 
 
-print("Regular addition with update")
+print("\nRegular addition with update")
 a = run_chart()
 a.add_data([0,1,2],["1st","2nd","3rd"])
 print(a)
 a.add_data([3,4,5], ["4th","5th","6th"])
 print(a)
 
-print("\n")
-print("Fail data type")
 b = run_chart()
-b.add_data([0,"1",2],["1st","2nd","3rd"])
-print(b)
+b.from_csv(filepath = "./named_control_data.csv",
+           data_col = "mydata",
+           label_col = "labelmedaddy",
+           grouping_col = "groupitupyourass")
 
-#c = control_chart()
-#c.add_data([0,1,2],["1st","2nd","3rd"])
-#c.append([5,8,20])
-#print(c)
+c = run_chart()
+c.from_csv(filepath = "./unnamed_control_data.csv",
+           data_col = 1,
+           label_col = 2,
+           grouping_col = 3,
+           header = False)
+
+
+
+
+# print("\n")
+# print("Fail data type")
+# b = run_chart()
+# b.add_data([0,"1",2],["1st","2nd","3rd"])
+# print(b)
+
+# c = control_chart()
+# c.add_data([0,1,2],["1st","2nd","3rd"])
+# c.append([5,8,20])
+# print(c)
 
 
 
