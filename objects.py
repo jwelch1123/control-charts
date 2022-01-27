@@ -82,9 +82,13 @@ class run_chart:
 
 
             if isinstance(data_col, str) and header:
-                # organize the headers and data
+                # for data, label, group which are not null
+                # append data into respective list
+                # 
                 pass
             if ():
+                # for data, label, group which are not null
+                # append data into respective list                
                 pass
             
             print(col_dict)
@@ -169,6 +173,11 @@ c.from_csv(filepath = "./unnamed_control_data.csv",
 # c.append([5,8,20])
 # print(c)
 
+
+# Things to Add
+# Take multi level groupings
+# Sort data based on label
+# [x for _, x in sorted(zip(Y, X))]
 
 
 #https://en.wikipedia.org/wiki/Nelson_rules
